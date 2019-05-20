@@ -1,4 +1,5 @@
 const express = require('express')
+const handle = require('./handlers')
 
 const app = express()
 
@@ -12,18 +13,10 @@ app.get('/', (req, res) => {
 
 
 // MiddleWare Function
-app.use((req, res, next) => {
-        const err = new Error('Not Found')
-        err.status = 404
+app.use(handle.notFound)
 
-        next(err)
-    })
-    // Handeling Errors
-app.use((err, req, res, next) => {
-    res.status(err.status || 500).json({
-        err: err.message || 'Something went wrong'
-    })
-})
+// Handeling Errors
+app.use(handle.errorHandler)
 
 
 app.listen(port, (req, res) => {
