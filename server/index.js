@@ -1,25 +1,31 @@
-require('dotenv').config()
 const express = require('express')
-const handle = require('./handlers')
-const cors = require('cors')
-const bodyParser = require('body-parser')
-const db = require('./models')
 
 const app = express()
-const port = process.env.PORT
 
-app.use(cors())
-app.use(bodyParser.json())
+// Post variable
+const port = process.env.port || 4000
 
+// Get request 
 app.get('/', (req, res) => {
-    res.json({ server: 'It works great!' })
+    res.json({ message: "Server is working" })
 })
 
 
-app.use(handle.notFound)
-app.use(handle.error)
+// MiddleWare Function
+app.use((req, res, next) => {
+        const err = new Error('Not Found')
+        err.status = 404
+
+        next(err)
+    })
+    // Handeling Errors
+app.use((err, req, res, next) => {
+    res.status(err.status || 500).json({
+        err: err.message || 'Something went wrong'
+    })
+})
 
 
-app.listen(port, (res, req) => {
-    console.log(`Server was running on port: ${port}`)
+app.listen(port, (req, res) => {
+    console.log(`Server was started on port: ${port}`)
 })
