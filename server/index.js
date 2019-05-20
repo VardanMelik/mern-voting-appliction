@@ -18,7 +18,7 @@ app.use(bodyParser.json())
 app.get('/', (req, res) => {
     res.json({ message: "Server is working" })
 })
-
+app.use('api/auth', )
 
 // MiddleWare Function
 app.use(handle.notFound)
