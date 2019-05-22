@@ -1,32 +1,26 @@
-require('dotenv').config()
-const express = require('express')
-const cors = require('cors')
-const bodyParser = require('body-parser')
-const handle = require('./handlers')
-const db = require('./models')
-const routes = require('./routes')
+require('dotenv').config();
 
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 
-const app = express()
-    // Post variable
-const port = process.env.PORT
+const routes = require('./routes');
+const handle = require('./handlers');
 
-app.use(cors())
-app.use(bodyParser.json())
+const app = express();
+const PORT = process.env.PORT || 4000;
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// Get request 
-app.get('/', (req, res) => {
-    res.json({ message: "Server is working" })
-})
-app.use('api/auth', routes.auth)
+app.use('/api/auth', routes.auth);
+app.use('/api/polls', routes.poll);
 
-// MiddleWare Function
-app.use(handle.notFound)
+app.use((req, res, next) => {
+    let err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+app.use(handle.error);
 
-// Handeling Errors
-app.use(handle.errorHandler)
-
-
-app.listen(port, (req, res) => {
-    console.log(`Server was started on port: ${port}`)
-})
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
